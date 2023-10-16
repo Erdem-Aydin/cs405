@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<svg id="graph">
+    <text x="20" y="20"> 2022 Yılı Yaş Oranlarına Göre Ölüm Tablosu</text>
+
+    <radialGradient id="colorGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+        <stop offset="0%" style="stop-color: #6495ED" />     
+        <stop offset="300%" style="stop-color: #1b1b97" />   
+    </radialGradient>
+
+    <linearGradient id="colorGradient2" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" style="stop-color: #000080" />       
+        <stop offset="10%" style="stop-color: #2d5194" />        
+        <stop offset="20%" style="stop-color: #3b67b7" />        
+        <stop offset="90%" style="stop-color: #82a1dc" />       
+        <stop offset="100%" style="stop-color: #eeeff5" />       
+    </linearGradient>
+</svg>
+<style type="text/css">
+    body{
+        background-color: rgb(236, 231, 231);
+    }
+    svg{
+        border: 2px solid #b5153a;
+    }
+    .bar{
+        fill: url(#colorGradient);
+    }
+    .barEffect{
+        fill: url(#colorGradient2)
+
+    }
+    .axis{
+        fill:rgb(27, 26, 26);
+    }
+    .label {
+        fill: rgb(19, 18, 18);
+        font-size: 14px;
+        text-anchor: end;
+    }
+</style>
+
+
+
+<script type="text/javascript">
+    function drawChart(valArr, minVal, maxVal){
+        var svgWidth = 1200  
+        var svgHeight = 900
+        var barWidth = 30
+        var axisHeights = 600
+
+        var html = '    <rect x='+ svgWidth/12+' y='+ svgHeight/8+'  width="2" height='+ axisHeights+'  class="axis" ></rect>'
+                +  ' <rect x='+ svgWidth/12+' y='+ (svgHeight/8 + axisHeights)+' width='+ axisHeights+' height="2"  class="axis" ></rect>'
+        
+        var miniSegmentHorizontal =  svgHeight/8 + 5
+        var miniSegmentVertical = svgWidth/12+65
+        var yVal = 250000
+        for(var i = 0; i<10; i++){
+            html+= '    <rect x='+ (svgWidth/12-5)+' y='+ miniSegmentHorizontal +' width="7" height="2" class="axis"></rect> '
+                + '    <text x="'+ (svgWidth/12-10)+'" y="'+ (miniSegmentHorizontal+5) +'" class="label"> '+yVal+' </text>'
+                + '    <line x1="'+ svgWidth/12+'" y1="'+ (miniSegmentHorizontal+1) +'" x2="700" y2="'+ (miniSegmentHorizontal+1) +'" stroke="black" stroke-dasharray="5,5" />'
+            
+            yVal-=25000
+            miniSegmentHorizontal = miniSegmentHorizontal + (axisHeights-5)/10
+            if(i<7){
+                html+= '    <rect x='+ miniSegmentVertical+' y='+ (svgHeight/8 + axisHeights) +' width="2" height="7" class="axis"></rect> '
+            }
+            miniSegmentVertical += 85
+        }
+        //html+= '    <rect x='+ miniSegmentVertical+' y='+ (svgHeight/8 + axisHeights) +' width="2" height="7" class="axis"></rect> '
+        html+= '<polygon points="'+ (svgWidth/12 +1)+','+ (svgHeight/8 -7)+' '+ (svgWidth/12 -4)+','+ svgHeight/8+' '+ (svgWidth/12 +6)+','+ svgHeight/8+'" fill="black" />'
+        html+= '<polygon points="'+ (svgWidth/12 +axisHeights)+','+ (svgHeight/8 + axisHeights +5)+' '+ (svgWidth/12 +axisHeights)+','+ (svgHeight/8 + axisHeights -5)+' '+ (svgWidth/12 +6 +axisHeights)+','+ (svgHeight/8 + axisHeights)+'" fill="black" />'
+
+        var pointsToDrawLine = "";
+        var x = svgWidth/12 + 10;
+        for(var i=0;i < valArr.length; i++){
+            html+= '<rect x= "'+ x + '" y = "'+ (svgHeight/8 + axisHeights -normalizer (valArr[i])) + '" width='+ barWidth +' height= "'+ normalizer (valArr[i]) +'" class="bar"/>'
+            + '    <text x="'+ x +'" y="'+ (svgHeight/8 + axisHeights - valArr[i]) + '" class="label"> '+yVal+' </text>'
+            html += '    <text x="'+ (x+20) +'" y="'+ (svgHeight/8 + axisHeights -normalizer (valArr[i])-6) + '" transform="rotate (270 '+ (x+20) +' '+ (svgHeight/8 + axisHeights -normalizer (valArr[i])-6) + ')"> '+valArr[i]+' </text>'
+            //pointsToDrawLine.push([x,(svgHeight/8 + axisHeights -normalizer (valArr[i])-6)])
+            pointsToDrawLine+= x+10 + ',' + (svgHeight/8 + axisHeights -normalizer (valArr[i])-65) + ' '
+            x+=85;
+        }
+
+        html+= '  <polyline points="+'+pointsToDrawLine+'" fill="none" stroke="red" stroke-width="2" id="myPolyline" />'
+
+
+        html+= ' <text x="'+ (svgWidth/12 + 35)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 1- </text>'
+        html+= ' <text x="'+ (svgWidth/12 + 125)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 1-4 </text>'
+        html+= ' <text x="'+ (svgWidth/12 + 210)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 5-14 </text>'
+        html+= ' <text x="'+ (svgWidth/12 + 295)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 15-34 </text>'
+        html+= ' <text x="'+ (svgWidth/12 + 380)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 35-54 </text>'
+        html+= ' <text x="'+ (svgWidth/12 + 470)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 55-74 </text>'
+        html+= ' <text x="'+ (svgWidth/12 + 550)+'" y="'+ (miniSegmentHorizontal+18) +'" class="label"> 75+ </text>'
+
+
+
+        document.getElementById('graph').innerHTML += html;
+        document.getElementById('graph').setAttribute('width',svgWidth)
+        document.getElementById('graph').setAttribute('height',svgHeight)
+
+    }
+
+    
+
+    function normalizer(val){
+        return (val/250000)*595
+    }
+
+    drawChart([9522,2038,2639,13440,39763,173269,264168]);
+</script>
